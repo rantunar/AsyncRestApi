@@ -1,0 +1,1 @@
+INSERT into event_message (id, inserted_at) values (1, current_timestamp);
