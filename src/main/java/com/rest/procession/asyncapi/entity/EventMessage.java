@@ -6,12 +6,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "event_message")
 public class EventMessage {
@@ -23,8 +28,9 @@ public class EventMessage {
   private String messageType;
   @Column(name = "correlation_id")
   private String correlationId;
-  @Column
-  private byte[] payload;
+  @Column(name="payload", columnDefinition="CLOB NOT NULL")
+  @Lob
+  private String payload;
   @Column(name = "inserted_at")
   private LocalDateTime insertedAt;
 

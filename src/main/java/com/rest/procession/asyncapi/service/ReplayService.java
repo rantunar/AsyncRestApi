@@ -5,6 +5,7 @@ import com.rest.procession.asyncapi.entity.EventReplay;
 import com.rest.procession.asyncapi.handler.ApplicationException;
 import com.rest.procession.asyncapi.handler.RecordNotFoundException;
 import com.rest.procession.asyncapi.restmodel.ReplayRequest;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -21,4 +22,6 @@ public interface ReplayService {
       List<EventMessage> eventMessage);
 
   EventReplay getReplayData(Integer replayId);
+
+  void saveEventMessage() throws IOException;
 }

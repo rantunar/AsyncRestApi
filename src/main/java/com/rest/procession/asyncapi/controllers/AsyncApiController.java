@@ -6,6 +6,7 @@ import com.rest.procession.asyncapi.handler.ApplicationException;
 import com.rest.procession.asyncapi.handler.RecordNotFoundException;
 import com.rest.procession.asyncapi.restmodel.ReplayRequest;
 import com.rest.procession.asyncapi.service.ReplayService;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import javax.validation.Valid;
@@ -40,5 +41,11 @@ public class AsyncApiController {
   @GetMapping(value = "/replay/{replay-id}")
   public ResponseEntity<EventReplay> getReplayData(@PathVariable(value = "replay-id") Integer replayId){
     return new ResponseEntity<>(replayService.getReplayData(replayId), HttpStatus.OK);
+  }
+
+  @PostMapping("/replay/message")
+  public  ResponseEntity<?> saveEventMessage() throws IOException {
+    replayService.saveEventMessage();
+    return new ResponseEntity<>(null, HttpStatus.OK);
   }
 }
