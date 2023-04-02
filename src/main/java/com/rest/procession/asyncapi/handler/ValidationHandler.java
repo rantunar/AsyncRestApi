@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +15,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 public class ValidationHandler extends ResponseEntityExceptionHandler {
+
+  @Override
+  protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+      HttpHeaders headers, HttpStatus status, WebRequest request) {
+    Map<String, String> errors = new HashMap<>();
+    errors.put("error", ex.getMessage());
+    errors.put("code", "E001");
+    return new ResponseEntity<Object>(errors, status);
+  }
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
@@ -27,7 +37,7 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
       errors.put(fieldName, message);
       errors.put("code", "E001");
     });
-    return new ResponseEntity<Object>(errors, HttpStatus.BAD_REQUEST);
+    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(ApplicationException.class)
@@ -35,7 +45,7 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
     Map<String, String> errors = new HashMap<>();
     errors.put("error", ex.getMessage());
     errors.put("code", "E003");
-    return new ResponseEntity<Object>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(errors, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(RecordNotFoundException.class)
@@ -43,7 +53,7 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
     Map<String, String> errors = new HashMap<>();
     errors.put("error", ex.getMessage());
     errors.put("code", "E002");
-    return new ResponseEntity<Object>(errors, HttpStatus.NOT_FOUND);
+    return new ResponseEntity<>(errors, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(JobInProgressException.class)
@@ -51,6 +61,6 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
     Map<String, String> errors = new HashMap<>();
     errors.put("error", ex.getMessage());
     errors.put("code", "E004");
-    return new ResponseEntity<Object>(errors, HttpStatus.CONFLICT);
+    return new ResponseEntity<>(errors, HttpStatus.CONFLICT);
   }
 }
