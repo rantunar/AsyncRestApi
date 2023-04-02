@@ -22,7 +22,7 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
     Map<String, String> errors = new HashMap<>();
     errors.put("error", ex.getMessage());
     errors.put("code", "E001");
-    return new ResponseEntity<Object>(errors, status);
+    return new ResponseEntity<>(errors, status);
   }
 
   @Override
