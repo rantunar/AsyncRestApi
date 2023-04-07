@@ -1,6 +1,6 @@
-package com.rest.procession.asyncapi.repository;
+package com.rest.procession.asyncapi.topic.repository;
 
-import com.rest.procession.asyncapi.entity.EventMessage;
+import com.rest.procession.asyncapi.topic.entity.EventMessage;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

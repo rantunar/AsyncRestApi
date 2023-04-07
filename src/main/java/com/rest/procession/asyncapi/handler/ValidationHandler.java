@@ -17,8 +17,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class ValidationHandler extends ResponseEntityExceptionHandler {
 
   @Override
-  protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-      HttpHeaders headers, HttpStatus status, WebRequest request) {
+  protected ResponseEntity<Object> handleHttpMessageNotReadable(
+      HttpMessageNotReadableException ex,
+      HttpHeaders headers,
+      HttpStatus status,
+      WebRequest request) {
     Map<String, String> errors = new HashMap<>();
     errors.put("error", ex.getMessage());
     errors.put("code", "E001");
@@ -26,17 +29,22 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
   }
 
   @Override
-  protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-      HttpHeaders headers, HttpStatus status, WebRequest request) {
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers,
+      HttpStatus status,
+      WebRequest request) {
 
     Map<String, String> errors = new HashMap<>();
-    ex.getBindingResult().getAllErrors().forEach((error) ->{
-
-      String fieldName = ((FieldError) error).getField();
-      String message = error.getDefaultMessage();
-      errors.put(fieldName, message);
-      errors.put("code", "E001");
-    });
+    ex.getBindingResult()
+        .getAllErrors()
+        .forEach(
+            (error) -> {
+              String fieldName = ((FieldError) error).getField();
+              String message = error.getDefaultMessage();
+              errors.put(fieldName, message);
+              errors.put("code", "E001");
+            });
     return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
   }
 

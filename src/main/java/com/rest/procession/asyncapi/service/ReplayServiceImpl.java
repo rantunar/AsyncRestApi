@@ -28,15 +28,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ReplayServiceImpl implements ReplayService {
 
-  @Autowired
-  EventReplayRepository eventReplayRepository;
+  @Autowired EventReplayRepository eventReplayRepository;
 
-  @Autowired
-  EventMessageRepository eventMessageRepository;
+  @Autowired EventMessageRepository eventMessageRepository;
 
-  private final static String IN_PROGRESS = "In-Progress";
-  private final static String COMPLETED = "Completed";
-  private final static String ERROR = "Error";
+  private static final String IN_PROGRESS = "In-Progress";
+  private static final String COMPLETED = "Completed";
+  private static final String ERROR = "Error";
 
   @Override
   public EventReplay storeEventReplay(final ReplayRequest replayRequest) {
@@ -49,19 +47,30 @@ public class ReplayServiceImpl implements ReplayService {
   }
 
   @Override
-  public List<EventMessage> fetchEventMessage(final ReplayRequest replayRequest){
-    if(eventReplayRepository.findByStatus(IN_PROGRESS).isPresent()) throw new JobInProgressException("Job is already IN-PROGRESS");
-    List<EventMessage> eventMessages = eventMessageRepository.findAllByInsertedAtBetween(replayRequest.getReplayFrom(),
-        LocalDateTime.now());
-    if(eventMessages.isEmpty()) throw new RecordNotFoundException("Record not found in event message for replay date from = "+replayRequest.getReplayFrom());
+  public List<EventMessage> fetchEventMessage(final ReplayRequest replayRequest) {
+    if (eventReplayRepository.findByStatus(IN_PROGRESS).isPresent())
+      throw new JobInProgressException("Job is already IN-PROGRESS");
+    List<EventMessage> eventMessages =
+        eventMessageRepository.findAllByInsertedAtBetween(
+            replayRequest.getReplayFrom(), LocalDateTime.now());
+    if (eventMessages.isEmpty())
+      throw new RecordNotFoundException(
+          "Record not found in event message for replay date from = "
+              + replayRequest.getReplayFrom());
     return eventMessages;
   }
 
   @Override
   @Async
-  public CompletableFuture<EventReplay> submitJob(final Integer replayId,
-      final ReplayRequest replayRequest, final List<EventMessage> eventMessage){
-    EventReplay eventReplay = eventReplayRepository.findById(replayId).orElseThrow(() -> new RecordNotFoundException("Record not found for replay id = "+replayId));
+  public CompletableFuture<EventReplay> submitJob(
+      final Integer replayId,
+      final ReplayRequest replayRequest,
+      final List<EventMessage> eventMessage) {
+    EventReplay eventReplay =
+        eventReplayRepository
+            .findById(replayId)
+            .orElseThrow(
+                () -> new RecordNotFoundException("Record not found for replay id = " + replayId));
     try {
       switch (replayRequest.getSourceSystem().name()) {
         case "CSE":
@@ -72,7 +81,7 @@ public class ReplayServiceImpl implements ReplayService {
               eventReplay = eventReplayRepository.save(eventReplay);
           }
       }
-    } catch (final Exception e){
+    } catch (final Exception e) {
       eventReplay.setStatus(ERROR);
       eventReplay.setMessage(e.getMessage());
       eventReplay = eventReplayRepository.save(eventReplay);
@@ -80,44 +89,50 @@ public class ReplayServiceImpl implements ReplayService {
     return CompletableFuture.completedFuture(eventReplay);
   }
 
-  private void serializeData(List<EventMessage> eventMessage){
-    eventMessage.forEach(entry -> {
-      byte[] payload = Base64.decodeBase64(entry.getPayload());
-      try (ByteArrayInputStream bis = new ByteArrayInputStream(payload);
-          ObjectInputStream ois = new ObjectInputStream(bis)) {
-        MessageBO messageBO = (MessageBO) ois.readObject();
-        log.info(messageBO.toString());
-      } catch (Exception e){
-        e.printStackTrace();
-      }
-    });
+  private void serializeData(List<EventMessage> eventMessage) {
+    eventMessage.forEach(
+        entry -> {
+          byte[] payload = Base64.decodeBase64(entry.getPayload());
+          try (ByteArrayInputStream bis = new ByteArrayInputStream(payload);
+              ObjectInputStream ois = new ObjectInputStream(bis)) {
+            MessageBO messageBO = (MessageBO) ois.readObject();
+            log.info(messageBO.toString());
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
   }
 
   @Override
-  public EventReplay getReplayData(final Integer replayId){
-    return eventReplayRepository.findById(replayId).orElseThrow(() -> new RecordNotFoundException("Record not found for replay id = "+replayId));
+  public EventReplay getReplayData(final Integer replayId) {
+    return eventReplayRepository
+        .findById(replayId)
+        .orElseThrow(
+            () -> new RecordNotFoundException("Record not found for replay id = " + replayId));
   }
 
   @Override
   public void saveEventMessage() throws IOException {
-    MessageBO messageBO = MessageBO.builder()
-        .correlationId(RandomString.make())
-        .eventState("UI")
-        .serviceName("replay")
-        .build();
-    ByteArrayOutputStream bos = new ByteArrayOutputStream() ;
-    ObjectOutput out  = new ObjectOutputStream(bos) ;
+    MessageBO messageBO =
+        MessageBO.builder()
+            .correlationId(RandomString.make())
+            .eventState("UI")
+            .serviceName("replay")
+            .build();
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    ObjectOutput out = new ObjectOutputStream(bos);
     out.writeObject(messageBO);
     out.close();
     byte[] dataArray = bos.toByteArray();
     String dataString = Base64.encodeBase64String(dataArray);
 
-    EventMessage eventMessage = EventMessage.builder()
-        .correlationId(RandomString.make())
-        .messageType("CSE")
-        .payload(dataString)
-        .insertedAt(LocalDateTime.now())
-        .build();
+    EventMessage eventMessage =
+        EventMessage.builder()
+            .correlationId(RandomString.make())
+            .messageType("CSE")
+            .payload(dataString)
+            .insertedAt(LocalDateTime.now())
+            .build();
     eventMessageRepository.save(eventMessage);
   }
 }

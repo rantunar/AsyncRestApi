@@ -27,24 +27,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class AsyncApiController {
 
-  @Autowired
-  ReplayService replayService;
+  @Autowired ReplayService replayService;
 
   @PostMapping(value = "/replay")
-  public ResponseEntity<EventReplay> replay(@Validated @RequestBody ReplayRequest replayRequest){
+  public ResponseEntity<EventReplay> replay(@Validated @RequestBody ReplayRequest replayRequest) {
     List<EventMessage> eventMessage = replayService.fetchEventMessage(replayRequest);
     EventReplay eventReplay = replayService.storeEventReplay(replayRequest);
-    replayService.submitJob(eventReplay.getId(),replayRequest,eventMessage);
+    replayService.submitJob(eventReplay.getId(), replayRequest, eventMessage);
     return new ResponseEntity<>(eventReplay, HttpStatus.ACCEPTED);
   }
 
   @GetMapping(value = "/replay/{replay-id}")
-  public ResponseEntity<EventReplay> getReplayData(@PathVariable(value = "replay-id") Integer replayId){
+  public ResponseEntity<EventReplay> getReplayData(
+      @PathVariable(value = "replay-id") Integer replayId) {
     return new ResponseEntity<>(replayService.getReplayData(replayId), HttpStatus.OK);
   }
 
   @PostMapping("/replay/message")
-  public  ResponseEntity<?> saveEventMessage() throws IOException {
+  public ResponseEntity<?> saveEventMessage() throws IOException {
     replayService.saveEventMessage();
     return new ResponseEntity<>(null, HttpStatus.OK);
   }

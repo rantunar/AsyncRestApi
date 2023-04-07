@@ -12,10 +12,16 @@ public class MessageBO implements Serializable {
 
   @Override
   public String toString() {
-    return "MessageBO{" +
-        "correlationId='" + correlationId + '\'' +
-        ", eventState='" + eventState + '\'' +
-        ", serviceName='" + serviceName + '\'' +
-        '}';
+    return "MessageBO{"
+        + "correlationId='"
+        + correlationId
+        + '\''
+        + ", eventState='"
+        + eventState
+        + '\''
+        + ", serviceName='"
+        + serviceName
+        + '\''
+        + '}';
   }
 }

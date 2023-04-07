@@ -21,5 +21,4 @@ public class ReplayRequest {
 
   @NotNull(message = "recoveryArea can't be null")
   private RecoveryArea recoveryArea;
-
 }

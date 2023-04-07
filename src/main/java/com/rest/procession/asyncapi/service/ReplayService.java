@@ -15,11 +15,12 @@ public interface ReplayService {
 
   public EventReplay storeEventReplay(ReplayRequest replayRequest);
 
-  public List<EventMessage> fetchEventMessage(ReplayRequest replayRequest) throws RecordNotFoundException;
+  public List<EventMessage> fetchEventMessage(ReplayRequest replayRequest)
+      throws RecordNotFoundException;
 
   @Async
-  CompletableFuture<EventReplay> submitJob(Integer replayId, ReplayRequest replayRequest,
-      List<EventMessage> eventMessage);
+  CompletableFuture<EventReplay> submitJob(
+      Integer replayId, ReplayRequest replayRequest, List<EventMessage> eventMessage);
 
   EventReplay getReplayData(Integer replayId);
 

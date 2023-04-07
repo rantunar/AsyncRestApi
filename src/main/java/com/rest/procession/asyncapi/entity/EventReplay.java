@@ -20,19 +20,23 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name="event_replay")
+@Table(name = "event_replay")
 public class EventReplay {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name="id")
+  @Column(name = "id")
   private Integer id;
-  @Column(name="status")
+
+  @Column(name = "status")
   private String status;
-  @Column(name="message")
+
+  @Column(name = "message")
   private String message;
+
   @Column(name = "replay_at")
   private LocalDateTime replayAt;
+
   @Column(name = "recovery_area")
   private String recoveryArea;
 }

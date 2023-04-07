@@ -1,4 +1,4 @@
-package com.rest.procession.asyncapi.entity;
+package com.rest.procession.asyncapi.topic.entity;
 
 import java.time.LocalDateTime;
 import javax.persistence.Column;
