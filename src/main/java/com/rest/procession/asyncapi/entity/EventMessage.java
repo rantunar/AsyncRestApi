@@ -31,7 +31,7 @@ public class EventMessage {
   @Column(name = "correlation_id")
   private String correlationId;
 
-  @Column(name = "payload", columnDefinition = "CLOB NOT NULL")
+  @Column(name = "payload", columnDefinition = "text")
   @Lob
   private String payload;
 
